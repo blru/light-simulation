@@ -87,3 +87,4 @@ document.addEventListener("mousedown", (event) => {
 });
 
 // TODO: Update context menu if window is resized making it out of bounds
+// window.addEventListener("resize", () => { ... })
