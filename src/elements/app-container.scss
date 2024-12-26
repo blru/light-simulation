@@ -12,7 +12,9 @@
 
         pointer-events: none;
 
-        & > * {
+        & > .island,
+        & > #simulation-canvas,
+        & > #context-menu {
             pointer-events: auto;
         }
     }
