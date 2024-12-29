@@ -1,12 +1,10 @@
 import "./context-menu.scss";
 import appContainer from "./app-container";
+import { button, separator } from "../components/context-menu";
 
 type ButtonContextItem = {
     kind: "button";
-    label: string;
-    shortcut?: string;
-    handleClick: () => void;
-};
+} & button.Options;
 type SeparatorContextItem = { kind: "separator" };
 type ContextItem = ButtonContextItem | SeparatorContextItem;
 
@@ -18,40 +16,25 @@ appContainer.append(contextMenuOverlay);
 
 let contextMenu: HTMLDivElement | null = null;
 
-function createSeparator(): HTMLHRElement {
-    const separator = document.createElement("hr");
-    separator.classList.add("separator");
-
-    return separator;
-}
-
-function createButton(options: ButtonContextItem): HTMLButtonElement {
-    const button = document.createElement("button");
-    button.classList.add("button");
-    button.addEventListener("click", () => {
-        close(); // close dialog after an option is clicked
-        options.handleClick();
-    });
-
-    const label = document.createElement("span");
-    label.innerText = options.label;
-    button.append(label);
-
-    if (options.shortcut != null) {
-        const shortcut = document.createElement("kbd");
-        shortcut.innerText = options.shortcut;
-        button.append(shortcut);
-    }
-
-    return button;
+export function close() {
+    contextMenu?.remove();
+    contextMenu = null;
 }
 
 function createItemElement(item: ContextItem) {
-    if (item.kind === "button") return createButton(item);
+    if (item.kind === "button")
+        return button.create({
+            ...item,
+            handleClick: () => {
+                close(); // close context menu when an item is clicked
+
+                item.handleClick();
+            },
+        });
 
     // TODO: This is meant to be a fallback if the item is not of one of the above kinds
     // but it's really just bad design
-    return createSeparator();
+    return separator.create();
 }
 
 export function open(position: { x: number; y: number }, items: ContextItem[]) {
@@ -70,11 +53,6 @@ export function open(position: { x: number; y: number }, items: ContextItem[]) {
     let boundingRect = contextMenu.getBoundingClientRect();
     contextMenu.style.left = `${Math.min(position.x, window.innerWidth - boundingRect.width)}px`;
     contextMenu.style.top = `${Math.min(position.y, window.innerHeight - boundingRect.height)}px`;
-}
-
-export function close() {
-    contextMenu?.remove();
-    contextMenu = null;
 }
 
 document.addEventListener("mousedown", (event) => {

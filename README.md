@@ -5,7 +5,7 @@ A browser-based optics simulation.
 ## TODO
 
 -   [ ] Simulation
-    -   [ ] Canvas
+    -   [x] Canvas
     -   [ ] Light rays
         -   [ ] Wavelength as a property
     -   [ ] Light sources
@@ -23,11 +23,11 @@ A browser-based optics simulation.
     -   [ ] State
         -   [ ] Saving and loading
     -   [ ] QOL
-        -   [ ] Theming
+        -   [x] Theming
         -   [ ] Undo and redo
         -   [ ] On demand diagrams of optical properties of placed lenses and mirrors
 -   [ ] Overlay
     -   [ ] Toolbar
     -   [x] Context menus
     -   [ ] Properties pane
-    -   [ ] Primary menu
+    -   [x] Primary menu
