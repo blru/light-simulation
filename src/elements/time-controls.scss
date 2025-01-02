@@ -1,0 +1,9 @@
+#time-controls {
+    height: 100%;
+    overflow: clip;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-1);
+}

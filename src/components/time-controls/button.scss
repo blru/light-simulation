@@ -1,0 +1,19 @@
+.time-controls-button {
+    height: 100%;
+    background: var(--background-secondary);
+    padding: 0 var(--spacing-3);
+    border-radius: 0;
+
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 1rem;
+
+    &:hover {
+        background: var(--background-secondary-alt);
+    }
+
+    // TODO: Choose a better name that can't easily be confused with :active
+    &.active {
+        background: var(--background-accent);
+    }
+}

@@ -1,0 +1,20 @@
+.time-controls-speed-input {
+    height: 100%;
+    width: 5rem;
+    background: var(--background-secondary);
+
+    color: var(--text-secondary);
+    text-align: center;
+
+    &:hover {
+        background: var(--background-secondary-alt);
+    }
+
+    &:focus {
+        background: var(--background-primary);
+
+        // TODO: Find a less bad way to do this
+        border-top: var(--spacing-1) solid var(--background-secondary);
+        border-bottom: var(--spacing-1) solid var(--background-secondary);
+    }
+}

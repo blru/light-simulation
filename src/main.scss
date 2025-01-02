@@ -64,3 +64,13 @@ hr {
     background-color: var(--separator-color);
     border: none;
 }
+
+input[type="text"] {
+    appearance: none;
+    border: none;
+    background: none;
+
+    &:focus {
+        outline: none;
+    }
+}

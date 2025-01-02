@@ -2,7 +2,7 @@ import "./overlay.scss";
 import appContainer from "./app-container";
 import { mainMenuContainer } from "./main-menu";
 import { toolbar } from "./toolbar";
-import { zoomControls } from "./zoom-controls";
+import { timeControls } from "./time-controls";
 
 export const overlay = document.createElement("div");
 overlay.id = "overlay";
@@ -12,4 +12,4 @@ appContainer.append(overlay);
 export const overlayUpper = document.createElement("div");
 overlayUpper.classList.add("upper");
 overlay.append(overlayUpper);
-overlayUpper.append(mainMenuContainer, toolbar, zoomControls);
+overlayUpper.append(mainMenuContainer, toolbar, timeControls);
