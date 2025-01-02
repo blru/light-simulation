@@ -15,5 +15,9 @@
     // TODO: Choose a better name that can't easily be confused with :active
     &.active {
         background: var(--background-accent);
+
+        &:hover {
+            background: var(--background-accent-alt);
+        }
     }
 }

@@ -1,0 +1,36 @@
+.toolbar-tool {
+    position: relative;
+
+    color: var(--text-primary);
+    background: var(--background-secondary);
+    text-align: center;
+
+    height: 2.5rem;
+    width: 2.5rem;
+
+    i {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+    kbd {
+        position: absolute;
+        bottom: var(--spacing-1);
+        right: var(--spacing-1);
+
+        font-size: 0.5rem;
+        color: var(--text-tertiary);
+    }
+
+    &:hover {
+        background: var(--background-secondary-alt);
+    }
+
+    &.selected {
+        background: var(--background-accent);
+
+        &:hover {
+            background: var(--background-accent-alt);
+        }
+    }
+}
