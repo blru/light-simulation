@@ -32,3 +32,4 @@ A browser-based optics simulation.
     -   [ ] Properties pane
     -   [x] Primary menu
     -   [x] Time Controls
+-   [ ] Mobile support
