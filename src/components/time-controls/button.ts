@@ -2,13 +2,13 @@ import "./button.scss";
 
 export type Options = {
     icon: string;
-    handleClick: () => void;
+    isActive?: boolean;
 };
 
 export function create(options: Options) {
     const button = document.createElement("button");
     button.classList.add("time-controls-button");
-    button.addEventListener("click", options.handleClick);
+    if (options.isActive) button.classList.add("active");
 
     const icon = document.createElement("i");
     icon.classList.add("fa-solid", "fa-fw", options.icon);
