@@ -27,7 +27,7 @@ A browser-based optics simulation.
         -   [ ] Undo and redo
         -   [ ] On demand diagrams of optical properties of placed lenses and mirrors
 -   [ ] Overlay
-    -   [ ] Toolbar
+    -   [x] Toolbar
     -   [x] Context menus
     -   [ ] Properties pane
     -   [x] Primary menu
