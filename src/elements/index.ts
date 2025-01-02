@@ -4,4 +4,4 @@ export * as overlay from "./overlay";
 export * as contextMenu from "./context-menu";
 export * as mainMenu from "./main-menu";
 export * as toolbar from "./toolbar";
-export * as zoomControls from "./time-controls";
+export * as timeControls from "./time-controls";
