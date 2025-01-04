@@ -2,7 +2,8 @@ import "./simulation-view.scss";
 import appContainer from "./app-container";
 import { contextMenu } from ".";
 
-const simulationView = document.createElement("canvas");
+export const simulationView: HTMLCanvasElement =
+    document.createElement("canvas");
 simulationView.id = "simulation-view";
 appContainer.appendChild(simulationView);
 
