@@ -1,3 +1,2 @@
-import { Simulation } from "./simulation";
-
-export const simulation = new Simulation();
+export * from "./simulation";
+export * from "./renderer";
