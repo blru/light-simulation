@@ -1,8 +1,10 @@
 export type TimeFlow = "backward" | "forward" | "paused";
+export type Camera = { x: number; y: number; scale: number };
 
 export class Simulation {
     private readonly ctx: CanvasRenderingContext2D;
     public timeFlow: TimeFlow = "forward";
+    public camera: Camera = { x: 0, y: 0, scale: 1 };
 
     constructor(private readonly canvas: HTMLCanvasElement) {
         const context = canvas.getContext("2d");
@@ -12,11 +14,11 @@ export class Simulation {
         this.ctx = context;
 
         // Begin stepping
-        requestAnimationFrame(this.step);
+        requestAnimationFrame(() => this.step());
     }
 
     private step() {
         // Inifnite loop
-        requestAnimationFrame(this.step);
+        requestAnimationFrame(() => this.step());
     }
 }
