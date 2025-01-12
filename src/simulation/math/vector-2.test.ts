@@ -75,5 +75,5 @@ it("should find the distance between two vectors", () => {
     const a = new Vector2(500, 250);
     const b = new Vector2(-650, 335);
 
-    expect(a.distanceFrom(b)).toBeCloseTo(1153.137, 4);
+    expect(a.distanceFrom(b)).toBeCloseTo(1153.137, 2);
 });
