@@ -1,8 +1,20 @@
 export class Vector2 {
     constructor(
-        public x: number,
-        public y: number,
+        public x: number = 0,
+        public y: number = 0,
     ) {}
+
+    /**
+     * A readonly zero vector
+     */
+    static zero = Object.freeze(new Vector2(0, 0));
+
+    /**
+     * Returns a new vector that is a unit vector of this vector
+     */
+    normalize() {
+        return new Vector2(this.x / this.magnitude, this.y / this.magnitude);
+    }
 
     /**
      * Returns a new vector that is the sum of this vector and another
@@ -19,7 +31,7 @@ export class Vector2 {
     }
 
     /**
-     * Returns a new vector that is the scalar product of this vector and a scalar value
+     * Returns a new vector whose components are multiplied by the provided scalar value
      */
     multiplyScalar(rhs: number) {
         return new Vector2(this.x * rhs, this.y * rhs);
@@ -46,11 +58,18 @@ export class Vector2 {
         return this.sub(other).magnitude;
     }
 
+    /**
+     * Returns true if the other vector is equal to this vector
+     */
+    equals(other: Vector2) {
+        return this.x === other.x && this.y === other.y;
+    }
+
     get magnitudeSquared() {
         return this.x ** 2 + this.y ** 2;
     }
 
     get magnitude(): number {
-        return Math.sqrt(this.magnitude);
+        return Math.sqrt(this.magnitudeSquared);
     }
 }
