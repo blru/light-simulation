@@ -42,7 +42,7 @@ it("should add two vectors together", () => {
     expect(a.add(b).equals(expectedSum)).toBe(true);
 });
 
-it("should subsctract a vector from another", () => {
+it("should subtract a vector from another", () => {
     const a = new Vector2(91, 2);
     const b = new Vector2(6, 5);
     const expectedDifference = new Vector2(85, -3);
