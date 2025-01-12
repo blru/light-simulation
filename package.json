@@ -6,12 +6,16 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "test": "vitest",
+        "coverage": "vitest run --coverage"
     },
     "devDependencies": {
+        "@vitest/coverage-v8": "^2.1.8",
         "sass": "^1.81.0",
         "typescript": "~5.6.2",
-        "vite": "^5.4.10"
+        "vite": "^5.4.10",
+        "vitest": "^2.1.8"
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.7.1",
