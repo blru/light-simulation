@@ -48,7 +48,20 @@ export class Vector2 {
      * Returns the angle (in radians) betewen this vector and another
      */
     angleBetween(other: Vector2) {
-        return Math.acos(this.dot(other) / (this.magnitude * other.magnitude));
+        // PERF: Since the product of 2 square roots is the same as the square root of the product of their radicands,
+        // we only need to do one square root instead of two
+        const magnitudeProduct = Math.sqrt(
+            this.magnitudeSquared * other.magnitudeSquared,
+        );
+
+        return Math.acos(this.dot(other) / magnitudeProduct);
+    }
+
+    /**
+     * Returns the distance squared between this vector and another
+     */
+    distanceSquaredFrom(other: Vector2) {
+        return this.sub(other).magnitudeSquared;
     }
 
     /**
@@ -63,6 +76,13 @@ export class Vector2 {
      */
     equals(other: Vector2) {
         return this.x === other.x && this.y === other.y;
+    }
+
+    /**
+     * Returns a new vector with the exact same components as this one
+     */
+    clone() {
+        return new Vector2(this.x, this.y);
     }
 
     get magnitudeSquared() {
