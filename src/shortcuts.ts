@@ -36,8 +36,6 @@ export function unbind(definition: ShortcutDefinition) {
 }
 
 document.addEventListener("keydown", function (event) {
-    console.log(boundShortcuts);
-
     // Create a stringified definition key for the current keyboard event
     const definitionKey = stringifyShortcutDefinition({
         code: event.code,
