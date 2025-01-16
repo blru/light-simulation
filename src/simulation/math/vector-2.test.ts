@@ -71,9 +71,23 @@ it("should find the angle between two vectors", () => {
     expect(a.angleBetween(b)).toBeCloseTo(2.07565, 4);
 });
 
+it("should find the distance squared between two vectors", () => {
+    const a = new Vector2(500, 250);
+    const b = new Vector2(-650, 335);
+
+    expect(a.distanceSquaredFrom(b)).toBe(1329725);
+});
+
 it("should find the distance between two vectors", () => {
     const a = new Vector2(500, 250);
     const b = new Vector2(-650, 335);
 
     expect(a.distanceFrom(b)).toBeCloseTo(1153.137, 2);
+});
+
+it("should clone a vector creating another with the exact same components as the original", () => {
+    const a = new Vector2(6, 4);
+    const b = a.clone();
+
+    expect(a.equals(b)).toBe(true);
 });
