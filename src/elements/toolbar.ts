@@ -78,8 +78,7 @@ for (const descriptor of toolDescriptors) {
     // Bind tool to a keyboard shortcut
     shortcuts.bind({ code: descriptor.shortcut }, () => select(descriptor.id));
 
-    // Bind to shortcut
-
+    // Bind shortcut
     toolbar.append(toolElement);
 }
 
