@@ -22,19 +22,19 @@ export function close() {
 }
 
 function createItemElement(item: ContextItem) {
-    if (item.kind === "button")
-        return button.create({
-            ...item,
-            handleClick: () => {
-                close(); // close context menu when an item is clicked
+    switch (item.kind) {
+        case "button":
+            return button.create({
+                ...item,
+                handleClick: () => {
+                    close(); // close context menu when an item is clicked
 
-                item.handleClick();
-            },
-        });
-
-    // TODO: This is meant to be a fallback if the item is not of one of the above kinds
-    // but it's really just bad design
-    return separator.create();
+                    item.handleClick();
+                },
+            });
+        case "separator":
+            return separator.create();
+    }
 }
 
 export function open(position: { x: number; y: number }, items: ContextItem[]) {

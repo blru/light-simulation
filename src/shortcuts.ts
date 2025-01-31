@@ -4,11 +4,15 @@ export type ShortcutDefinition = {
     isAlt?: boolean;
     isShift?: boolean;
 };
+export type ShortcutBinding = {
+    handler: ShortcutHandler;
+} & ShortcutOptions;
+export type ShortcutOptions = { description?: string };
 export type ShortcutHandler = (event: KeyboardEvent) => void;
 
-const boundShortcuts: { [Key in string]: ShortcutHandler } = {};
+const boundShortcuts: { [key: string]: ShortcutBinding } = {};
 
-function stringifyShortcutDefinition(definition: ShortcutDefinition) {
+function serializeShortcutDefinition(definition: ShortcutDefinition) {
     // Turn the definition into a string for easy mapping
     // HACK: JS must have a better way to do this
     let definitionKey = `${definition.code}-`;
@@ -19,17 +23,21 @@ function stringifyShortcutDefinition(definition: ShortcutDefinition) {
     return definitionKey;
 }
 
-export function bind(definition: ShortcutDefinition, handler: ShortcutHandler) {
-    const definitionKey = stringifyShortcutDefinition(definition);
+export function bind(
+    definition: ShortcutDefinition,
+    handler: ShortcutHandler,
+    options: ShortcutOptions = {},
+) {
+    const definitionKey = serializeShortcutDefinition(definition);
 
-    // Assign handler to stringified shortcut key
-    boundShortcuts[definitionKey] = handler;
+    // Assign handler to serialized shortcut key
+    boundShortcuts[definitionKey] = { handler, ...options };
 
     return definition;
 }
 
 export function unbind(definition: ShortcutDefinition) {
-    const definitionKey = stringifyShortcutDefinition(definition);
+    const definitionKey = serializeShortcutDefinition(definition);
 
     // Remove shortcut
     delete boundShortcuts[definitionKey];
@@ -37,15 +45,15 @@ export function unbind(definition: ShortcutDefinition) {
 
 document.addEventListener("keydown", function (event) {
     // Create a stringified definition key for the current keyboard event
-    const definitionKey = stringifyShortcutDefinition({
+    const definitionKey = serializeShortcutDefinition({
         code: event.code,
         isCtrl: event.ctrlKey,
         isAlt: event.altKey,
         isShift: event.shiftKey,
     });
 
-    // Attempt to find handler in bound shortcuts
-    const handler = boundShortcuts[definitionKey];
+    // Attempt to find a bound handler in bound shortcuts
+    const handler = boundShortcuts[definitionKey]?.handler;
 
     // Call handler if found
     if (handler != null) handler(event);

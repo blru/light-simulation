@@ -1,11 +1,15 @@
 import "./simulation-view.scss";
 import appContainer from "./app-container";
 import { contextMenu } from ".";
+import { Simulation } from "../simulation";
 
 export const simulationView: HTMLCanvasElement =
     document.createElement("canvas");
 simulationView.id = "simulation-view";
 appContainer.appendChild(simulationView);
+
+// Instantiate the simulation and attach it to this simulation view
+export const simulation = new Simulation(simulationView);
 
 function updateDimensions() {
     simulationView.width = window.innerWidth;
