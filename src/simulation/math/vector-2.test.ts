@@ -95,7 +95,9 @@ it("should rotate a vector by a certain angle", () => {
     const vector = new Vector2(19, 6);
     const expected = new Vector2(-6, 19);
 
-    expect(vector.rotate(Math.PI / 2).approximatelyEquals(expected)).toBe(true);
+    expect(vector.rotateBy(Math.PI / 2).approximatelyEquals(expected)).toBe(
+        true,
+    );
 });
 
 it("should find the distance squared between two vectors", () => {
