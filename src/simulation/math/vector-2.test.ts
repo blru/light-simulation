@@ -13,6 +13,12 @@ it("should return the correct magnitude", () => {
     expect(vector.magnitude).toBe(5);
 });
 
+it("should return the correct angle.", () => {
+    const vector = new Vector2(6, 9);
+
+    expect(vector.angle).toBeCloseTo(0.98279, 4);
+});
+
 it("should check if two vectors are equal", () => {
     const a = new Vector2(128, 256);
     const b = new Vector2(128, 256);
@@ -25,6 +31,20 @@ it("should check if two vectors are not equal", () => {
     const b = new Vector2(256, 128);
 
     expect(a.equals(b)).toBe(false);
+});
+
+it("should check if two vectors are approximately equal", () => {
+    const a = new Vector2(128.00023451, 256.0006521);
+    const b = new Vector2(128.000651, 256.000991);
+
+    expect(a.approximatelyEquals(b, 10e-4)).toBe(true);
+});
+
+it("should check if two vectors are not approximately equal", () => {
+    const a = new Vector2(128.555, 256.7913);
+    const b = new Vector2(128.5562, 256.7923);
+
+    expect(a.approximatelyEquals(b, 10e-4)).toBe(false);
 });
 
 it("should return a unit vector of a vector", () => {
@@ -69,6 +89,13 @@ it("should find the angle between two vectors", () => {
     const b = new Vector2(1, 12);
 
     expect(a.angleBetween(b)).toBeCloseTo(2.07565, 4);
+});
+
+it("should rotate a vector by a certain angle", () => {
+    const vector = new Vector2(19, 6);
+    const expected = new Vector2(-6, 19);
+
+    expect(vector.rotate(Math.PI / 2).approximatelyEquals(expected)).toBe(true);
 });
 
 it("should find the distance squared between two vectors", () => {

@@ -1,86 +1,83 @@
-import { tool } from "../components/toolbar";
-import * as shortcuts from "../shortcuts";
 import "./toolbar.scss";
+import { getHumanReadableDefinition, Shortcuts } from "../shortcuts";
+import { Separator as SeparatorComponent } from "src/components/toolbar/separator";
+import { Tool as ToolComponent } from "../components/toolbar/tool";
+import { ToolDescriptor } from "./toolbar/tool-descriptor";
+import { DragDescriptor } from "./toolbar/tool-descriptors/drag";
+import { SelectDescriptor } from "./toolbar/tool-descriptors/select";
+import { RayDescriptor } from "./toolbar/tool-descriptors/ray";
+import { LightSourceDescriptor } from "./toolbar/tool-descriptors/light-source";
+import { MediumDescriptor } from "./toolbar/tool-descriptors/medium";
+import { header } from "./overlay";
 
-export type ToolDescriptor = {
-    id: string;
-    shortcut: string;
-    readableShortcut: string;
-    icon: string;
+type ToolbarItem =
+    | { kind: "tool"; descriptor: ToolDescriptor }
+    | { kind: "separator" };
+
+type Tool = {
+    descriptor: ToolDescriptor;
+    element: HTMLElement;
 };
-
-const toolDescriptors = [
-    {
-        id: "select",
-        shortcut: "Digit1",
-        readableShortcut: "1",
-        icon: "fa-arrow-pointer",
-    },
-    {
-        id: "light_ray",
-        shortcut: "Digit2",
-        readableShortcut: "2",
-        icon: "fa-bolt",
-    },
-    {
-        id: "light_source",
-        shortcut: "Digit3",
-        readableShortcut: "3",
-        icon: "fa-lightbulb",
-    },
-    {
-        id: "mirror",
-        shortcut: "Digit4",
-        readableShortcut: "4",
-        icon: "fa-square",
-    },
-    {
-        id: "lens",
-        shortcut: "Digit5",
-        readableShortcut: "5",
-        icon: "fa-square-caret-right",
-    },
-] as const satisfies ToolDescriptor[];
-
-export type ToolIdentifier = (typeof toolDescriptors)[number]["id"];
 
 export const toolbar = document.createElement("div");
 toolbar.id = "toolbar";
 toolbar.classList.add("island");
+header.append(toolbar);
 
-let currentTool: ToolIdentifier | null = null;
-let toolToElement: { [K in ToolIdentifier]?: HTMLButtonElement } = {};
+const toolbarItems: ToolbarItem[] = [
+    { kind: "tool", descriptor: DragDescriptor },
+    { kind: "tool", descriptor: SelectDescriptor },
+    { kind: "separator" },
+    { kind: "tool", descriptor: RayDescriptor },
+    { kind: "tool", descriptor: LightSourceDescriptor },
+    { kind: "tool", descriptor: MediumDescriptor },
+];
+export const tools: Tool[] = [];
+let currentTool: Tool;
 
-export function select(identifier: ToolIdentifier) {
-    // Deselect old tool
+export function select(newTool: Tool) {
     if (currentTool != null) {
-        let currentToolElement = toolToElement[currentTool]!;
-        tool.setIsSelected(currentToolElement, false);
+        currentTool.descriptor.handleDeselect?.();
+
+        ToolComponent.setIsSelected(currentTool.element, false);
     }
 
-    // Select new tool
-    let newToolElement = toolToElement[identifier]!;
-    tool.setIsSelected(newToolElement, true);
+    newTool.descriptor.handleSelect?.();
 
-    currentTool = identifier;
+    ToolComponent.setIsSelected(newTool.element, true);
+    currentTool = newTool;
 }
 
-for (const descriptor of toolDescriptors) {
-    const toolElement = tool.create({
-        icon: descriptor.icon,
-        shortcut: descriptor.readableShortcut,
-        handleClick: () => select(descriptor.id),
-    });
-
-    // Bind tool to element in the toolbar
-    toolToElement[descriptor.id] = toolElement;
-
-    // Bind tool to a keyboard shortcut
-    shortcuts.bind({ code: descriptor.shortcut }, () => select(descriptor.id));
-
-    // Bind shortcut
-    toolbar.append(toolElement);
+export function getCurrentTool() {
+    return currentTool;
 }
 
-// Initialize by selecting the select tool
-select("select");
+// Populate toolbar with the toolbarItems
+for (const item of toolbarItems) {
+    switch (item.kind) {
+        case "separator":
+            toolbar.append(SeparatorComponent.create());
+            break;
+        case "tool":
+            const descriptor = item.descriptor;
+            const element = ToolComponent.create({
+                shortcut: getHumanReadableDefinition(
+                    descriptor.metadata.shortcut,
+                ),
+                icon: descriptor.metadata.icon,
+            });
+
+            const tool: Tool = { element, descriptor };
+            toolbar.append(element);
+            tools.push(tool);
+
+            element.addEventListener("click", () => select(tool));
+            Shortcuts.bind(descriptor.metadata.shortcut, () => select(tool));
+            break;
+    }
+}
+
+// Select the first tool to be the initial tool
+select(tools[0]);
+
+export const Toolbar = { select, getCurrentTool } as const;

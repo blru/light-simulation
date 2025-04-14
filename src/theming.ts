@@ -1,3 +1,5 @@
+import * as preferences from "./simulation/preferences";
+
 export type Theme = "dark" | "light";
 
 const THEME_STORAGE_KEY = "theme";
@@ -19,6 +21,9 @@ export function setPreference(newPreference: Theme) {
 
 export function reflectPreference() {
     document.firstElementChild?.setAttribute("data-theme", getPreference());
+
+    // update simulation colors
+    preferences.refreshColors();
 }
 
 export function togglePreference() {

@@ -5,5 +5,8 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: var(--spacing-1);
+    order: 3; // the time controls should be last in the overlay upper
+
+    // TODO: make this work so it's visible
+    // visibility: hidden;
 }

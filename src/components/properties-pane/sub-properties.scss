@@ -1,0 +1,15 @@
+#properties-pane .sub-properties {
+    display: flex;
+    flex-direction: column;
+
+    margin-bottom: var(--spacing-2);
+
+    & > .label {
+        font-weight: 500;
+        height: 1.5rem;
+    }
+
+    & > .property-container {
+        margin-left: 1.5rem;
+    }
+}

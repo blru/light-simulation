@@ -1,0 +1,53 @@
+#properties-pane {
+    display: none;
+    flex-direction: column;
+    gap: var(--spacing-3);
+
+    padding: var(--spacing-4);
+    width: 20rem;
+    align-self: flex-end;
+    order: 2;
+    max-height: 36rem;
+
+    &.visible {
+        display: flex;
+    }
+
+    & > .title-container {
+        display: flex;
+        gap: var(--spacing-2);
+        flex-direction: row;
+        align-items: baseline;
+
+        color: var(--text-secondary);
+        font-size: 1rem;
+    }
+
+    & > hr {
+        margin: 0;
+    }
+
+    .property-container {
+        display: flex;
+        flex-direction: column;
+
+        gap: var(--spacing-1);
+    }
+
+    .label {
+        color: var(--text-secondary);
+        font-weight: normal;
+        font-size: 0.875rem;
+        text-wrap: nowrap;
+        text-overflow: ellipsis;
+        overflow-x: hidden;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    * {
+        width: auto;
+    }
+}

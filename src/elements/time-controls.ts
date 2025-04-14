@@ -1,42 +1,41 @@
-import { simulation } from "./simulation-view.ts";
-import { button, speedInput } from "../components/time-controls";
-import { TimeFlow } from "../simulation";
+import { button, speedInput } from "src/components/time-controls";
 import "./time-controls.scss";
 import * as shortcuts from "../shortcuts";
+import { header } from "./overlay";
+import { Simulation } from "src/simulation";
+import { Preferences } from "src/simulation/preferences";
 
 export const timeControls = document.createElement("div");
 timeControls.id = "time-controls";
 timeControls.classList.add("island");
+header.append(timeControls);
 
 const lightSpeed = speedInput.create({
-    initialValue: 1,
-    handleSubmit: (value) => {},
+    initialValue: Preferences.parameters.lightSpeed,
+    handleSubmit: (value) => {
+        Preferences.parameters.lightSpeed = value;
+    },
 });
 
-const backward = button.create({ icon: "fa-backward" });
-const forward = button.create({ icon: "fa-forward", isActive: true });
+const toggleRunning = button.create({ icon: "fa-forward", isActive: true });
 
-export function handleTimeFlowButtonPress(newTimeFlow: TimeFlow) {
-    // If button is pressed again just pause time or else switch to the other time direction
-    updateTimeFlow(
-        simulation.timeFlow === newTimeFlow ? "paused" : newTimeFlow,
-    );
+function toggleIsRunning() {
+    const isNowRunning = !Simulation.getIsRunning();
+    Simulation.setIsRunning(isNowRunning);
+
+    button.setIsActive(toggleRunning, isNowRunning);
 }
 
-export function updateTimeFlow(newTimeFlow: TimeFlow) {
-    simulation.timeFlow = newTimeFlow;
+toggleRunning.addEventListener("click", toggleIsRunning);
+shortcuts.bind({ code: "Space" }, () => {
+    toggleIsRunning();
 
-    // Set corresponding buttons to active depending on state, buttons are naturally both ianctive in paused state
-    button.setIsActive(forward, simulation.timeFlow === "forward");
-    button.setIsActive(backward, simulation.timeFlow === "backward");
-}
+    // HACK: Prevent pressing space again from pressing the button instead of triggering this shortcut
+    toggleRunning.blur();
+}); // key binding to toggle time flow direction
 
-backward.addEventListener("click", () => handleTimeFlowButtonPress("backward"));
-forward.addEventListener("click", () => handleTimeFlowButtonPress("forward"));
-shortcuts.bind({ code: "Space" }, () =>
-    simulation.timeFlow === "paused"
-        ? updateTimeFlow("forward")
-        : updateTimeFlow("paused"),
-); // key binding to toggle time flow direction
+shortcuts.bind({ code: "F1" }, () => {
+    Simulation.step();
+}); // key binding to toggle time flow direction
 
-timeControls.append(backward, lightSpeed, forward);
+timeControls.append(lightSpeed, toggleRunning);

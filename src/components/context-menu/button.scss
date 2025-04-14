@@ -11,6 +11,10 @@
         background: var(--background-secondary-alt);
     }
 
+    &:disabled {
+        opacity: 0.5;
+    }
+
     & > span {
         overflow: hidden;
         flex: 0 1 auto;

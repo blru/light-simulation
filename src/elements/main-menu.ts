@@ -1,9 +1,11 @@
 import "./main-menu.scss";
 import * as theming from "../theming";
 import { button, linkButton, separator } from "../components/main-menu";
+import { header } from "./overlay";
 
 export const mainMenuContainer = document.createElement("div");
 mainMenuContainer.id = "main-menu-container";
+header.append(mainMenuContainer);
 
 const mainMenu = document.createElement("div");
 mainMenu.classList.add("island");

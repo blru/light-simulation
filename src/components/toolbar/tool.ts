@@ -3,13 +3,11 @@ import "./tool.scss";
 type Options = {
     icon: string;
     shortcut: string;
-    handleClick: () => void;
 };
 
 export function create(options: Options) {
     const tool = document.createElement("button");
     tool.classList.add("toolbar-tool");
-    tool.addEventListener("click", options.handleClick);
 
     const icon = document.createElement("i");
     icon.classList.add("fa-fw", "fa-solid", options.icon);
@@ -22,10 +20,9 @@ export function create(options: Options) {
     return tool;
 }
 
-export function setIsSelected(
-    button: ReturnType<typeof create>,
-    isSelected: boolean,
-) {
+export function setIsSelected(button: HTMLElement, isSelected: boolean) {
     if (isSelected) button.classList.add("selected");
     else button.classList.remove("selected");
 }
+
+export const Tool = { create, setIsSelected } as const;

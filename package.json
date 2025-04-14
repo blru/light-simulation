@@ -8,7 +8,8 @@
         "build": "tsc && vite build",
         "preview": "vite preview",
         "test": "vitest",
-        "coverage": "vitest run --coverage"
+        "coverage": "vitest run --coverage",
+        "import-graph": "madge ./src/main.ts --ts-config tsconfig.json -x .*\\.scss$ -i import-graph.png"
     },
     "devDependencies": {
         "@vitest/coverage-v8": "^2.1.8",
@@ -19,7 +20,6 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.7.1",
-        "normalize.css": "^8.0.1",
-        "reflect-metadata": "^0.2.2"
+        "normalize.css": "^8.0.1"
     }
 }

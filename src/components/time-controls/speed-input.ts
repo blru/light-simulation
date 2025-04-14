@@ -1,4 +1,5 @@
 import "./speed-input.scss";
+import * as shortcuts from "src/shortcuts";
 
 export type Options = {
     initialValue: number;
@@ -19,7 +20,7 @@ export function create(options: Options) {
             newValue >= 0;
 
         value = isNewValueValid ? newValue : value;
-        speedInput.value = `${value} m/s`;
+        speedInput.value = `${value} cm/s`;
     };
     updateValue(options.initialValue); // set value to inital value
 

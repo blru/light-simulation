@@ -4,6 +4,7 @@
 
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
 
     .island {
         border-radius: var(--border-radius);
@@ -18,12 +19,33 @@
         height: 2.75rem;
 
         display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: var(--spacing-4);
+        order: 1; // should be placed on top of the coordinates
 
-        & > * {
-            height: 100%;
+        & > .header {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            order: 1;
+
+            & > * {
+                height: 100%;
+            }
         }
+    }
+
+    .toast {
+        order: 3;
+
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: var(--spacing-1);
     }
 }

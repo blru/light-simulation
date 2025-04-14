@@ -1,40 +1,76 @@
-export class Vector2 {
+import { HasProperties } from "src/elements/properties-pane/has-properties";
+import { EPSILON } from "./constants";
+import { Property } from "src/elements/properties-pane/properties";
+
+export class Vector2 implements HasProperties {
     constructor(
         public x: number = 0,
         public y: number = 0,
     ) {}
 
-    /**
-     * A readonly zero vector
-     */
-    static zero = Object.freeze(new Vector2(0, 0));
+    static get zero() {
+        return new Vector2(0, 0);
+    }
+
+    static get unit() {
+        return new Vector2(1, 1);
+    }
+
+    static fromDirectionalMagnitude(magnitude: number, angle: number) {
+        return new Vector2(
+            Math.cos(angle) * magnitude,
+            Math.sin(angle) * magnitude,
+        );
+    }
 
     /**
-     * Returns a new vector that is a unit vector of this vector
+     * Makes this vector a unit vector.
+     *
+     * @returns the vector affected
      */
     normalize() {
-        return new Vector2(this.x / this.magnitude, this.y / this.magnitude);
+        const magnitude = this.magnitude;
+
+        this.x /= magnitude;
+        this.y /= magnitude;
+
+        return this;
     }
 
     /**
-     * Returns a new vector that is the sum of this vector and another
+     * Adds another vector to this vector
+     *
+     * @returns the vector affected
      */
     add(rhs: Vector2) {
-        return new Vector2(this.x + rhs.x, this.y + rhs.y);
+        this.x += rhs.x;
+        this.y += rhs.y;
+
+        return this;
     }
 
     /**
-     * Returns a new vector that is the difference between this vector and another
+     * Subtracts a vector from this vector
+     *
+     * @returns the vector affected
      */
     sub(rhs: Vector2) {
-        return new Vector2(this.x - rhs.x, this.y - rhs.y);
+        this.x -= rhs.x;
+        this.y -= rhs.y;
+
+        return this;
     }
 
     /**
-     * Returns a new vector whose components are multiplied by the provided scalar value
+     * Multiplies the components of this vector by a scalar value
+     *
+     * @returns the vector affected
      */
     multiplyScalar(rhs: number) {
-        return new Vector2(this.x * rhs, this.y * rhs);
+        this.x *= rhs;
+        this.y *= rhs;
+
+        return this;
     }
 
     /**
@@ -48,7 +84,7 @@ export class Vector2 {
      * Returns the angle (in radians) betewen this vector and another
      */
     angleBetween(other: Vector2) {
-        // PERF: Since the product of 2 square roots is the same as the square root of the product of their radicands,
+        // Since the product of 2 square roots is the same as the square root of the product of their radicands,
         // we only need to do one square root instead of two
         const magnitudeProduct = Math.sqrt(
             this.magnitudeSquared * other.magnitudeSquared,
@@ -58,17 +94,54 @@ export class Vector2 {
     }
 
     /**
+     * Rotates this vector counter clockwise by the specific number of radians
+     *
+     * @param beta - Angle in radians to rotate by
+     */
+    rotateBy(beta: number) {
+        // PERF: Maybe there is an optimization here?
+        const alpha = this.angle;
+        const magnitude = this.magnitude;
+
+        this.x = magnitude * Math.cos(alpha + beta);
+        this.y = magnitude * Math.sin(alpha + beta);
+
+        return this;
+    }
+
+    /**
+     * Aligns this vector with another vector
+     */
+    alignWith(other: Vector2) {
+        if (this.dot(other) < 0) this.multiplyScalar(-1);
+
+        return this;
+    }
+
+    /**
+     * Reflects this light ray along a normal
+     */
+    reflect(normal: Vector2) {
+        this.normalize();
+        this.sub(normal.clone().multiplyScalar(2 * normal.dot(this)));
+
+        return this;
+    }
+
+    /**
      * Returns the distance squared between this vector and another
      */
     distanceSquaredFrom(other: Vector2) {
-        return this.sub(other).magnitudeSquared;
+        // Clone to avoid modifying the original vector
+        return this.clone().sub(other).magnitudeSquared;
     }
 
     /**
      * Returns the distance between this vector and another
      */
     distanceFrom(other: Vector2) {
-        return this.sub(other).magnitude;
+        // Clone to avoid modifying the original vector
+        return this.clone().sub(other).magnitude;
     }
 
     /**
@@ -76,6 +149,18 @@ export class Vector2 {
      */
     equals(other: Vector2) {
         return this.x === other.x && this.y === other.y;
+    }
+
+    /**
+     * Returns true if the other vector is approximately equal to this vector
+     *
+     * @param epsilon - The maximum difference allowed between each component of the vectors for them to be considered equal
+     */
+    approximatelyEquals(other: Vector2, epsilon: number = EPSILON) {
+        const deltaX = Math.abs(this.x - other.x);
+        const deltaY = Math.abs(this.y - other.y);
+
+        return deltaX <= epsilon && deltaY <= epsilon;
     }
 
     /**
@@ -89,7 +174,39 @@ export class Vector2 {
         return this.x ** 2 + this.y ** 2;
     }
 
-    get magnitude(): number {
+    get magnitude() {
         return Math.sqrt(this.magnitudeSquared);
+    }
+
+    /**
+     * Returns this vector's angle in radians from the x-axis in the counter clockwise direction between -pi/2 to pi/2 rad
+     */
+    get angle() {
+        return Math.atan2(this.y, this.x);
+    }
+
+    getProperties(): Property[] {
+        return [
+            {
+                label: "X",
+                kind: "number",
+                get: () => {
+                    return this.x;
+                },
+                set: (newValue) => {
+                    this.x = newValue;
+                },
+            },
+            {
+                label: "Y",
+                kind: "number",
+                get: () => {
+                    return this.y;
+                },
+                set: (newValue) => {
+                    this.y = newValue;
+                },
+            },
+        ];
     }
 }

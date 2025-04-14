@@ -1,5 +1,6 @@
 #main-menu-container {
     position: relative;
+    order: 1; // the main menu should be displayed first
 
     & > button {
         appearance: none;

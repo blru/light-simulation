@@ -1,7 +1,10 @@
-export * as simulationView from "./simulation-view";
-export * from "./app-container";
-export * as overlay from "./overlay";
-export * as contextMenu from "./context-menu";
-export * as mainMenu from "./main-menu";
-export * as toolbar from "./toolbar";
-export * as timeControls from "./time-controls";
+import "./simulation-view";
+import "./app-container";
+import "./overlay";
+import "./context-menu";
+import "./main-menu";
+import "./toolbar";
+import "./time-controls";
+import "./coordinates";
+import "./computation-indicator";
+import "./properties-pane";

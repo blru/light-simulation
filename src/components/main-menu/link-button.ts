@@ -1,4 +1,4 @@
-import { baseButton } from ".";
+import * as baseButton from "./base-button";
 
 type Options = baseButton.Options & { href: string };
 

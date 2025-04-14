@@ -6,30 +6,29 @@ A browser-based optics simulation.
 
 - [ ] Simulation
     - [x] Canvas
-    - [ ] Light rays
+    - [x] Light rays
         - [ ] Wavelength as a property
-    - [ ] Light sources
-        - [ ] Point source
-        - [ ] Polygon source
+    - [x] Light sources
+        - [x] Point source
+        - [x] Line source
         - [ ] Image source (?)
-    - [ ] Mirrors
-        - [ ] Plane mirrors
-        - [ ] Spherical and parabolic mirrors
-        - [ ] Custom shaped mirrors (?)
-    - [ ] Lenses
-        - [ ] Plane lenses
-        - [ ] Spherical and parabolic lenses
-        - [ ] Custom shaped lenses (?)
-    - [ ] State
-        - [ ] Saving and loading
+    - [x] Geometries
+        - [x] Lines
+        - [ ] Circular arcs
+        - [ ] Parabolic arcs
+        - [ ] Circular Lens (formerly double circular arc)
+        - [ ] Rectangles
+        - [ ] Custom shapes (?)
     - [ ] QOL
         - [x] Theming
+        - [ ] Saving and loading
         - [ ] Undo and redo
+        - [ ] Copy and pasting
         - [ ] On demand diagrams of optical properties of placed lenses and mirrors
 - [ ] Overlay
     - [x] Toolbar
     - [x] Context menus
-    - [ ] Properties pane
+    - [x] Properties pane
     - [x] Primary menu
     - [x] Time Controls
 - [ ] Mobile support

@@ -1,0 +1,13 @@
+#coordinates {
+    order: 2; // should be below the compute indicator
+
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    opacity: 1;
+
+    transition: opacity 300ms;
+
+    &[data-hidden="true"] {
+        opacity: 0;
+    }
+}

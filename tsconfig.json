@@ -5,7 +5,6 @@
         "module": "ESNext",
         "lib": ["ES2020", "DOM", "DOM.Iterable"],
         "skipLibCheck": true,
-        "experimentalDecorators": true,
 
         /* Bundler mode */
         "moduleResolution": "Bundler",
@@ -19,7 +18,13 @@
         "noUnusedLocals": false,
         "noUnusedParameters": false,
         "noFallthroughCasesInSwitch": true,
-        "noUncheckedSideEffectImports": true
+        "noUncheckedSideEffectImports": true,
+
+        /* Root path alias */
+        "baseUrl": ".",
+        "paths": {
+            "src/*": ["./src/*"]
+        }
     },
     "include": ["src"]
 }
