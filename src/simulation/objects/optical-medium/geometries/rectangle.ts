@@ -39,7 +39,7 @@ export class RectangleMediumGeometry implements MediumGeometry {
 
         if (boundingBox.isInside(point)) {
             return Math.min(
-                point.x - 1,
+                point.x - x1,
                 x2 - point.x,
                 point.y - y1,
                 y2 - point.y,

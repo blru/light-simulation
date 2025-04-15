@@ -9,7 +9,7 @@ import { approximatelyEquals, wrapAngle } from "src/simulation/math/utils";
 import { TAU } from "src/simulation/math/constants";
 
 export class CircularArcMediumGeometry implements MediumGeometry {
-    public angle: number = Math.PI / 2;
+    public deltaTheta: number = Math.PI / 2;
     public radius: number = 200;
 
     normalAt(transform: Transform, point: Vector2): Vector2 {
@@ -19,34 +19,26 @@ export class CircularArcMediumGeometry implements MediumGeometry {
     }
 
     distanceFrom(transform: Transform, point: Vector2): number {
-        const center = this.findCenter(transform);
         const { start: startAngle, end: endAngle } =
             this.findCentralAngles(transform);
+        const center = this.findCenter(transform);
 
-        const pointAngle = wrapAngle(point.clone().sub(center).angle);
+        const centerDistance = center.distanceFrom(point);
+        const pointAngle = point.clone().sub(center).angle;
 
-        // TODO: Cleanup
-        if (
-            (startAngle < endAngle &&
-                pointAngle >= startAngle &&
-                pointAngle <= endAngle) ||
-            (endAngle < startAngle &&
-                (pointAngle >= startAngle || pointAngle >= endAngle))
-        ) {
-            // Is closest to point on arc
-            return Math.abs(point.distanceFrom(center) - this.radius);
+        if (this.isAngleBetween(transform, pointAngle)) {
+            // Closest point lies on the arc's curve
+            return Math.abs(centerDistance - this.radius);
         } else {
-            // Is closest to one of the end points
-            const startPoint = center
-                .clone()
-                .add(Vector2.fromDirectionalMagnitude(this.radius, startAngle));
-            const endPoint = center
-                .clone()
-                .add(Vector2.fromDirectionalMagnitude(this.radius, endAngle));
+            const start = Vector2.fromDirectionalMagnitude(
+                startAngle,
+                this.radius,
+            );
+            const end = Vector2.fromDirectionalMagnitude(endAngle, this.radius);
 
             return Math.min(
-                startPoint.distanceFrom(point),
-                endPoint.distanceFrom(point),
+                point.distanceFrom(start.add(center)),
+                point.distanceFrom(end.add(center)),
             );
         }
     }
@@ -101,12 +93,15 @@ export class CircularArcMediumGeometry implements MediumGeometry {
             {
                 kind: "number",
                 label: "Arc Angle (deg)",
-                get: () => this.angle * (180 / Math.PI),
+                get: () => this.deltaTheta * (180 / Math.PI),
                 set: (newValue) => {
                     const inputAngle = newValue * (Math.PI / 180);
 
                     // Clamp to [0, pi]
-                    this.angle = Math.max(Math.min(Math.PI, inputAngle), 0);
+                    this.deltaTheta = Math.max(
+                        Math.min(Math.PI, inputAngle),
+                        0,
+                    );
                 },
             },
             {
@@ -131,14 +126,28 @@ export class CircularArcMediumGeometry implements MediumGeometry {
         end: number;
     } {
         // Rotation range is [-pi, pi], it needs to be [0, 2*pi]
-        const halfArcAngle = this.angle / 2;
-        const centralAngle = TAU + transform.rotation;
-        const start = wrapAngle(centralAngle - halfArcAngle);
-        const end = wrapAngle(centralAngle + halfArcAngle);
+        const start = this.normAngle(transform.rotation - this.deltaTheta / 2);
+        const end = this.normAngle(transform.rotation + this.deltaTheta / 2);
 
         return {
             start,
             end,
         };
+    }
+
+    private isAngleBetween(transform: Transform, theta: number) {
+        const { start, end } = this.findCentralAngles(transform);
+
+        theta = this.normAngle(theta);
+
+        if (start < end) {
+            return start <= theta && theta <= end;
+        } else {
+            return theta >= start || theta <= end;
+        }
+    }
+
+    private normAngle(angle: number) {
+        return ((angle % TAU) + TAU) % TAU;
     }
 }

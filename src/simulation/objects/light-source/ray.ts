@@ -1,11 +1,10 @@
 import { Vector2 } from "src/simulation/math/vector-2";
 import { Renderable } from "src/simulation/renderer/renderable";
 import { LightSource } from "../light-source";
-import { Steppable } from "src/simulation/steppable";
-import { Simulation } from "src/simulation";
-import { OpticalMedium } from "../optical-medium";
 import { fromWorld } from "src/simulation/renderer";
 import { Preferences } from "src/simulation/preferences";
+import { OpticalMedium } from "../optical-medium";
+import { Simulation } from "src/simulation";
 import { EPSILON } from "src/simulation/math/constants";
 import { approximatelyEquals } from "src/simulation/math/utils";
 
@@ -22,7 +21,7 @@ export type InitialRay = {
 export class Ray implements Renderable {
     public readonly origin: Vector2;
     public end: Vector2;
-    public endDirection: Vector2; /** Normalized direction vector */
+    public direction!: Vector2; /** Normalized direction vector for the current direction */
     public length: number = 0;
     public movements: Movement[] = [];
 
@@ -32,125 +31,7 @@ export class Ray implements Renderable {
     ) {
         this.origin = origin.clone();
         this.end = origin.clone();
-        this.endDirection = direction.clone().normalize();
-        this.movements.push({ refractiveIndex: 1, vector: new Vector2() });
-    }
-
-    // TODO: Make this code nicer
-    computePath(): void {
-        while (this.length < this.source.maxRayLength) {
-            const lastMovement = this.movements[this.movements.length - 1];
-            const remainingDistance = this.source.maxRayLength - this.length;
-            const closest = Simulation.closestObjectTo<OpticalMedium>(
-                this.end,
-                (object) => object instanceof OpticalMedium,
-            );
-
-            // Utility function to advance the lastMovement forward
-            const advance = (distance: number) => {
-                const advancement = this.endDirection
-                    .clone()
-                    .multiplyScalar(distance);
-
-                lastMovement.vector.add(advancement);
-
-                this.end.add(advancement);
-                this.length += advancement.magnitude;
-            };
-
-            if (closest == null) {
-                //  There are no objects can impede the path, travel the maximum distance
-                advance(remainingDistance);
-            } else if (
-                closest.distance > EPSILON // If there isn't a collision
-            ) {
-                // There are objects, but there is no collision or the collision is within the current medium
-                const travelableDistance = Math.min(
-                    remainingDistance,
-                    closest.distance,
-                );
-
-                advance(travelableDistance);
-            } else {
-                // There has been a collision, handle it
-                const medium = closest.object;
-                const normal = medium
-                    .normalAt(this.end)
-                    .alignWith(lastMovement.vector);
-
-                const reflect = () => {
-                    // Source: https://en.wikipedia.org/wiki/Specular_reflection
-                    this.endDirection = lastMovement.vector
-                        .clone()
-                        .normalize()
-                        .reflect(normal);
-
-                    this.movements.push({
-                        vector: new Vector2(),
-                        refractiveIndex: lastMovement.refractiveIndex,
-                    });
-                };
-
-                switch (medium.behavior) {
-                    case "reflective": {
-                        reflect();
-                        break;
-                    }
-                    case "refractive": {
-                        // BUG: Critical angle does not work because the refracted light ray coincides with the edges of media meaning a constant distance of 0
-
-                        // Source: https://en.wikipedia.org/wiki/Snell%27s_law
-                        const l = lastMovement.vector.clone().normalize();
-                        const n = normal.clone().multiplyScalar(-1);
-
-                        // Find the next closest medium
-                        const nextClosest =
-                            Simulation.closestObjectTo<OpticalMedium>(
-                                this.end,
-                                (object) =>
-                                    object instanceof OpticalMedium &&
-                                    object !== closest.object,
-                            );
-
-                        const incidentIndex = lastMovement.refractiveIndex;
-                        const refractedIndex =
-                            nextClosest != null && closest.distance < EPSILON
-                                ? nextClosest.object.refractiveIndex
-                                : 1;
-                        const r = incidentIndex / refractedIndex;
-
-                        const c = n.clone().multiplyScalar(-1).dot(l);
-                        const radicand = 1 - r * r * (1 - c * c);
-
-                        if (radicand < 0) {
-                            // Total internal refraction
-                            reflect();
-                            break;
-                        }
-
-                        this.endDirection = l
-                            .clone()
-                            .multiplyScalar(r)
-                            .add(
-                                n
-                                    .clone()
-                                    .multiplyScalar(
-                                        r * c - Math.sqrt(radicand),
-                                    ),
-                            );
-
-                        this.movements.push({
-                            vector: new Vector2(),
-                            refractiveIndex: medium.refractiveIndex,
-                        });
-
-                        break;
-                    }
-                }
-
-                advance(EPSILON * 2);
-            }
-        }
+        this.changeDirection(direction.clone().normalize());
     }
 
     render(ctx: CanvasRenderingContext2D): void {
@@ -178,5 +59,118 @@ export class Ray implements Renderable {
 
     shouldRender(): boolean {
         return true;
+    }
+
+    computePath(): void {
+        // Advance until the maximum length has been reached
+        while (!this.hasReachedMaximumLength()) {
+            const { distance: advanceableDistance, medium: closestMedium } =
+                this.computeAdvanceableDistance();
+
+            const hasCollided = advanceableDistance <= EPSILON;
+            if (hasCollided && closestMedium != null) {
+                const normal = closestMedium
+                    .normalAt(this.end)
+                    .alignOppositeWith(this.direction); // Faces away from plane
+
+                switch (closestMedium.behavior) {
+                    case "reflective": {
+                        this.reflect(normal);
+                        break;
+                    }
+                    case "refractive": {
+                        throw new Error("Unimplemented");
+                        break;
+                    }
+                }
+            } else {
+                this.advance(advanceableDistance);
+            }
+        }
+    }
+
+    /** Utility methods for computing path */
+
+    private reflect(normal: Vector2) {
+        // No need to clone since direction will be updated anyways
+        this.changeDirection(this.direction.reflect(normal));
+    }
+
+    /**
+     * @param direction - Normalized direction vector
+     */
+    private changeDirection(direction: Vector2) {
+        this.direction = direction;
+
+        // Determine the refractive index
+        const refractiveIndex1 = this.lastMovement?.refractiveIndex ?? 1;
+        const refractiveIndex2 =
+            this.findTouchingMedia()
+                .map((medium) => medium.refractiveIndex)
+                .filter(
+                    (mediumIndex) =>
+                        !approximatelyEquals(mediumIndex, refractiveIndex1),
+                )[0] ?? refractiveIndex1;
+
+        this.movements.push({
+            refractiveIndex: refractiveIndex2,
+            vector: new Vector2(),
+        });
+
+        // Prevent same medium from being touched twice
+        this.advance(EPSILON * 2);
+    }
+
+    private advance(distance: number) {
+        const translation = this.direction.clone().multiplyScalar(distance);
+
+        this.end.add(translation);
+        this.lastMovement.vector.add(translation);
+        this.length += distance;
+    }
+
+    private computeAdvanceableDistance(): {
+        distance: number;
+        medium?: OpticalMedium;
+    } {
+        const closest = Simulation.closestObjectTo<OpticalMedium>(
+            this.end,
+            (object) => object instanceof OpticalMedium,
+        );
+
+        // NOTE: Maybe this should be an explicit if statement
+        const distance = Math.min(
+            closest?.distance ?? this.remainingDistance,
+            this.remainingDistance,
+        );
+
+        return { distance, medium: closest?.object };
+    }
+
+    private findTouchingMedia(): OpticalMedium[] {
+        const touchingMedia: OpticalMedium[] = [];
+
+        for (const object of Simulation.objects) {
+            if (
+                object instanceof OpticalMedium &&
+                object.distanceFrom(this.end) <= EPSILON
+            ) {
+                touchingMedia.push(object);
+            }
+        }
+
+        return touchingMedia;
+    }
+
+    private hasReachedMaximumLength(): boolean {
+        return this.length >= this.source.maxRayLength - EPSILON;
+    }
+
+    private get lastMovement(): Movement {
+        return this.movements[this.movements.length - 1];
+    }
+
+    private get remainingDistance(): number {
+        return this.source.maxRayLength - this.length;
     }
 }

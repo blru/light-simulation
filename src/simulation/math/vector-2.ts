@@ -119,6 +119,15 @@ export class Vector2 implements HasProperties {
     }
 
     /**
+     * Aligns this vector opposite of another vector
+     */
+    alignOppositeWith(other: Vector2) {
+        if (this.dot(other) < 0) this;
+
+        return this.multiplyScalar(-1);
+    }
+
+    /**
      * Reflects this light ray along a normal
      */
     reflect(normal: Vector2) {
