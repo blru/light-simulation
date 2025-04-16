@@ -122,7 +122,7 @@ export class Vector2 implements HasProperties {
      * Aligns this vector opposite of another vector
      */
     alignOppositeWith(other: Vector2) {
-        if (this.dot(other) < 0) this;
+        if (this.dot(other) < 0) return this;
 
         return this.multiplyScalar(-1);
     }
@@ -131,7 +131,7 @@ export class Vector2 implements HasProperties {
      * Reflects this light ray along a normal
      */
     reflect(normal: Vector2) {
-        this.normalize();
+        // Source: https://en.wikipedia.org/wiki/Snell%27s_law
         this.sub(normal.clone().multiplyScalar(2 * normal.dot(this)));
 
         return this;

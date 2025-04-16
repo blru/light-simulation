@@ -104,7 +104,7 @@ export class RectangleMediumGeometry implements MediumGeometry {
         return [
             {
                 kind: "number",
-                label: "width",
+                label: "Width",
                 get: () => this.width,
                 set: (newValue) => {
                     this.width = Math.abs(newValue);
@@ -112,7 +112,7 @@ export class RectangleMediumGeometry implements MediumGeometry {
             },
             {
                 kind: "number",
-                label: "height",
+                label: "Height",
                 get: () => this.height,
                 set: (newValue) => {
                     this.height = Math.abs(newValue);

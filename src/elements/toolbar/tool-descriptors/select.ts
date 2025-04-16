@@ -75,25 +75,40 @@ function selectAt(position: Vector2) {
         ) {
             return;
         }
-    } else {
+    }
+
+    let selectionTarget: SimulationObject | null = null;
+
+    // Near Strategy: Try to find object that mouse is near
+    {
         const closest = Simulation.closestObjectTo(position);
 
-        if (
-            closest != null &&
-            (closest.distance <= MINIMUM_SELECTION_DISTANCE ||
-                closest.object.isInside(position))
-        ) {
-            // A new selection is possible
-            selection = {
-                object: closest.object,
-                action: null,
-            };
-
-            // Show the properties pane
-            PropertiesPane.show(closest.object);
-
-            return;
+        if (closest != null && closest.distance <= MINIMUM_SELECTION_DISTANCE) {
+            selectionTarget = closest.object;
         }
+    }
+
+    // Inside Strategy: Try to find object that mouse is inside
+    if (selectionTarget == null) {
+        for (const object of Simulation.objects) {
+            if (object.isInside(position)) {
+                selectionTarget = object;
+                break;
+            }
+        }
+    }
+
+    if (selectionTarget != null) {
+        // A new selection is possible
+        selection = {
+            object: selectionTarget,
+            action: null,
+        };
+
+        // Show the properties pane
+        PropertiesPane.show(selectionTarget);
+
+        return;
     }
 
     // Nothing to select, the selection is cleared
